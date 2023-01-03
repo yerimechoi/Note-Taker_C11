@@ -1,4 +1,4 @@
-  # Team Profile Generator C_10
+  # Note Taker C_11
   
   ## Description
   This project was to modify a starter code to create an application that writes and saves notes. It uses an Express.js back end which saves and retreive notes from a JSON file. Then to connect the back end to the front end, which was already created.
@@ -38,4 +38,3 @@
   <a name="license"></a>
   ## License
   N/A
-  
