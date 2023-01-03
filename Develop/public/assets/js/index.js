@@ -31,7 +31,12 @@ const getNotes = () =>
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  })
+    .then(response => response.json())
+    .then((data) => data)
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 
 const saveNote = (note) =>
   fetch('/api/notes', {
@@ -40,7 +45,16 @@ const saveNote = (note) =>
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(note),
-  });
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      alert(JSON.stringify(data.body));
+      createLi(note);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
@@ -118,7 +132,8 @@ const handleRenderSaveBtn = () => {
 
 // Render the list of note titles
 const renderNoteList = async (notes) => {
-  let jsonNotes = await notes.json();
+  console.log( notes)
+  let jsonNotes = await JSON.parse(notes);
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
