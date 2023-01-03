@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
-const noteData = require('./db/db.json');
+const fs = require('fs');
+
 const uuid = require('./helpers/uuid');
 
 const PORT = 3001;
@@ -19,20 +20,41 @@ app.get('/notes', (req, res) =>
     res.sendFile(path.join(__dirname, '/public/notes.html'))
 );
 
-app.get('/api/notes', (req, res) =>
-    res.json(noteData)
-);
+app.get('/api/notes', (req, res) => {
+    fs.readFile(path.join(__dirname, './db/db.json'), 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        console.log(data);
+        res.json(data);
+    })
+});
 
 app.post('/api/notes', (req, res) => {
     console.info(`${req.method} request received to add a note`);
-    const { noteTitle, noteText } = req.body;
+    const { title, text } = req.body;
 
-    if (noteTitle && noteText) {
+    if (title && text) {
         const newNote = {
-          noteTitle,
-          noteText,
+          title,
+          text,
           id: uuid(),
         };
+
+        fs.readFile(path.join(__dirname, './db/db.json'), 'utf8', (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            let parseData = JSON.parse(data);
+            console.log(parseData)
+            parseData.push(newNote);
+                fs.writeFile(path.join(__dirname, './db/db.json'), JSON.stringify(parseData), (err,data) => {
+                if (err) {
+                console.log(err);
+                }
+                console.log(data);
+            });
+        })
 
         const response = {
             status: 'success',
@@ -40,10 +62,17 @@ app.post('/api/notes', (req, res) => {
         };
 
         res.status(201).json(response);
+        console.log(response);
     } else {
         res.status(500).json('Error in posting note');
     }
 });
+
+//delete
+// similar to post
+// get the note by id provided in req.params
+// filter out notes without that id and update json file with filtered notes
+// .filter RESEARCH!!!
 
 app.listen(PORT, () =>
     console.log(`Example app listening at http://localhost:${PORT}`)
